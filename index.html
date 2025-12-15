@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Interactivo - Ley de Snell y Reflexión Interna Total</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-lightbulb"></i> Simulador Interactivo: Ley de Snell y Reflexión Interna Total</h1>
+            <p class="subtitle">Visualiza la refracción, reflexión y el ángulo crítico en diferentes medios ópticos</p>
+        </header>
+
+        <div class="main-content">
+            <div class="simulation-container">
+                <div id="simulation-canvas"></div>
+                <div class="simulation-info">
+                    <div class="info-box">
+                        <h3><i class="fas fa-info-circle"></i> Información en Tiempo Real</h3>
+                        <div class="info-item">
+                            <span class="label">Ángulo de incidencia (θ₁):</span>
+                            <span id="incident-angle" class="value">45.0°</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Ángulo de refracción (θ₂):</span>
+                            <span id="refracted-angle" class="value">28.1°</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Ángulo crítico (θc):</span>
+                            <span id="critical-angle" class="value">41.8°</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Estado:</span>
+                            <span id="tir-status" class="value normal">Refracción normal</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Índices de refracción:</span>
+                            <span id="refractive-indices" class="value">n₁ = 1.00, n₂ = 1.50</span>
+                        </div>
+                    </div>
+                    
+                    <div class="legend">
+                        <h4><i class="fas fa-palette"></i> Leyenda:</h4>
+                        <div class="legend-item">
+                            <div class="color-sample incident"></div>
+                            <span>Rayo incidente</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-sample reflected"></div>
+                            <span>Rayo reflejado</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-sample refracted"></div>
+                            <span>Rayo refractado</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-sample critical"></div>
+                            <span>Ángulo crítico</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-sample interface"></div>
+                            <span>Interfase entre medios</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-container">
+                <div class="control-section">
+                    <h2><i class="fas fa-sliders-h"></i> Controles de Simulación</h2>
+                    
+                    <div class="control-group">
+                        <h3><i class="fas fa-water"></i> Medio 1 (Incidente)</h3>
+                        <div class="medium-selector">
+                            <select id="medium1">
+                                <option value="1.0003">Aire (n=1.0003)</option>
+                                <option value="1.33">Agua (n=1.33)</option>
+                                <option value="1.5">Vidrio (n=1.5)</option>
+                                <option value="1.62">Diamante (n=2.42)</option>
+                                <option value="custom">Personalizado...</option>
+                            </select>
+                            <div class="custom-input" id="custom1-container" style="display: none;">
+                                <input type="number" id="custom-n1" min="1" max="3" step="0.01" value="1.0">
+                            </div>
+                        </div>
+                        
+                        <h3><i class="fas fa-water"></i> Medio 2 (Refractado)</h3>
+                        <div class="medium-selector">
+                            <select id="medium2">
+                                <option value="1.5">Vidrio (n=1.5)</option>
+                                <option value="1.33">Agua (n=1.33)</option>
+                                <option value="1.0003">Aire (n=1.0003)</option>
+                                <option value="2.42">Diamante (n=2.42)</option>
+                                <option value="custom">Personalizado...</option>
+                            </select>
+                            <div class="custom-input" id="custom2-container" style="display: none;">
+                                <input type="number" id="custom-n2" min="1" max="3" step="0.01" value="1.5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-adjust"></i> Ángulo de Incidencia</h3>
+                        <div class="slider-container">
+                            <input type="range" id="angle-slider" min="0" max="90" step="0.1" value="45" class="slider">
+                            <div class="slider-value">
+                                <span id="angle-value">45.0°</span>
+                                <div class="slider-ticks">
+                                    <span>0°</span>
+                                    <span>45°</span>
+                                    <span>90°</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="angle-controls">
+                            <button id="decrease-angle" class="btn-icon"><i class="fas fa-minus"></i></button>
+                            <input type="number" id="angle-input" min="0" max="90" step="0.1" value="45" class="number-input">
+                            <button id="increase-angle" class="btn-icon"><i class="fas fa-plus"></i></button>
+                            <span class="unit">grados</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-cog"></i> Opciones de Visualización</h3>
+                        <div class="checkbox-group">
+                            <label class="checkbox">
+                                <input type="checkbox" id="show-critical" checked>
+                                <span class="checkmark"></span>
+                                Mostrar ángulo crítico
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" id="show-labels" checked>
+                                <span class="checkmark"></span>
+                                Mostrar etiquetas
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" id="show-grid" checked>
+                                <span class="checkmark"></span>
+                                Mostrar rejilla
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" id="animate-ray">
+                                <span class="checkmark"></span>
+                                Animación del rayo
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="reset-btn" class="btn-secondary">
+                            <i class="fas fa-redo"></i> Reiniciar
+                        </button>
+                        <button id="critical-btn" class="btn-primary">
+                            <i class="fas fa-bullseye"></i> Ir al ángulo crítico
+                        </button>
+                        <button id="tir-btn" class="btn-primary">
+                            <i class="fas fa-ban"></i> Mostrar TIR
+                        </button>
+                    </div>
+                </div>
+
+                <div class="theory-section">
+                    <h2><i class="fas fa-book-open"></i> Teoría - Ley de Snell</h2>
+                    <div class="theory-content">
+                        <p>La <strong>Ley de Snell</strong> describe cómo se refracta un rayo de luz al pasar de un medio a otro:</p>
+                        <div class="formula">
+                            n₁ · sin(θ₁) = n₂ · sin(θ₂)
+                        </div>
+                        <p>Donde:</p>
+                        <ul>
+                            <li><strong>n₁, n₂</strong> = Índices de refracción de los medios</li>
+                            <li><strong>θ₁</strong> = Ángulo de incidencia</li>
+                            <li><strong>θ₂</strong> = Ángulo de refracción</li>
+                        </ul>
+                        
+                        <h3><i class="fas fa-exclamation-triangle"></i> Reflexión Interna Total (TIR)</h3>
+                        <p>Ocurre cuando la luz pasa de un medio más denso a uno menos denso (n₁ > n₂) y el ángulo de incidencia excede el <strong>ángulo crítico</strong>:</p>
+                        <div class="formula">
+                            θc = arcsin(n₂/n₁)
+                        </div>
+                        <p>En este caso, no hay rayo refractado y toda la luz se refleja.</p>
+                        
+                        <div class="tip">
+                            <i class="fas fa-lightbulb"></i>
+                            <strong>Consejo:</strong> Prueba con n₁ > n₂ (ej: vidrio → aire) y aumenta el ángulo hasta ver la reflexión total.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Simulador creado con p5.js | Ley de Snell y Reflexión Interna Total | Física Óptica</p>
+            <p class="instructions">
+                <i class="fas fa-mouse-pointer"></i> Arrastra el punto rojo para cambiar el ángulo | 
+                <i class="fas fa-sliders-h"></i> Usa los controles para ajustar parámetros
+            </p>
+        </footer>
+    </div>
+
+    <script src="sketch.js"></script>
+</body>
+</html>
