@@ -3,7 +3,7 @@
 ![Captura del Simulador](screenshot.png)
 
 ## 🚀 Demo en Vivo
-👉 **[https://tuusuario.github.io/snell-law-simulator](https://tuusuario.github.io/snell-law-simulator)** 👈
+👉 **https://github.com/Joelzzz01/snell-law-simulator?tab=readme-ov-file** 👈
 
 ## 📖 Descripción
 Simulador web interactivo que visualiza y explica los fenómenos de refracción, reflexión y reflexión interna total basándose en la **Ley de Snell**. Desarrollado para fines educativos en física óptica y aplicaciones de ingeniería.
